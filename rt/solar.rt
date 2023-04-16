@@ -1,0 +1,27 @@
+A   0.1             255,255,255
+C   0,10,100        0,-0.1,-1       60 2
+# C   -10,0,00        1,0,0       60 2
+L   0,20,0        0.5         0,0,0
+
+# sp 0,0,0         1          255,255,255 a  N water.xpm
+sp 0,0,0          4          T ./xpm/8k_sun.xpm
+sp 6,0,0         0.7          T ./xpm/8k_mercury.xpm
+sp 9,0,0         1.5          T ./xpm/4k_venus_atmosphere.xpm
+sp 13,0,0         1.6          T ./xpm/earth.xpm
+sp 17,0,0         1.1          T ./xpm/8k_mars.xpm
+sp 23,0,0         3.5          T ./xpm/8k_jupiter.xpm
+sp 31,0,0         3          T ./xpm/8k_saturn.xpm
+sp 39,0,0         2.3          T ./xpm/2k_uranus.xpm
+sp 47,0,0         2.2          T ./xpm/2k_neptune.xpm
+
+# pl 0,0,-100         0,0,-1          0,0,0
+pl 0,0,-100         0,0,-1          T ./xpm/2k_stars_milky_way.xpm
+# sp -1.5,0.5,0.5           1          0,0,255
+# cy  2,0,1           -1,1,-1    1    2    T ./xpm/earth.xpm
+# cy  2,0,1           -1,1,-1    1    2   T ./xpm/checker.xpm
+# co  1,1,-1           -1,-1,1    1    3    T ./xpm/checker.xpm
+# co  -2.5,3.5,-1           1,-1,1    1    3    T ./xpm/earth.xpm
+# co  -2.5,3.5,-1           1,-1,1    1    3    T ./xpm/checker.xpm
+# sp -5,-3.0,0           1          0,0,255
+# sp -5,-2.9,0           1          0,0,255
+# sp -5,-2.8,0           1          0,0,255
