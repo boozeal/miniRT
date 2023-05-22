@@ -1,0 +1,32 @@
+# 	ratio			color
+A	0.5				255,255,255
+
+# 	origin			dir			fov		AA scale
+C	0,0,10			0,0,-1		60		2
+
+# 	origin			ratio		color
+L	0,20,0			0.8			255,255,255
+# L	-40,20,0		0.8			255,0,0
+# L	0,20,0			0.8			0,255,0
+# L	40,20,0			0.8			0,0,255
+
+# 	origin			rad			color or texture
+sp	0,0,0			1			0,0,255
+sp	-1.5,0.5,0.5	1			-T./xpm/8k_earth_daymap.xpm	-N./xpm/earth_normal2.xpm
+sp	-5,-2,0			1			0,0,255
+sp	3.5,0,0			1			-T./xpm/8k_earth_daymap.xpm		-N./xpm/earth_normal2.xpm
+
+# 	origin			dir			color or texture
+# pl	0,-2,0			0,1,0		255,255,255
+# pl	0,-2,0			0,1,0		-T./xpm/water2.xpm				-N./xpm/water_normal2.xpm
+pl	0,-10,0			0,-0.707107,-0.707107		-T./xpm/water.xpm		-N./xpm/water_normal.xpm
+# pl	0,0,-10			0,0,1		-T./xpm/water.xpm		-N./xpm/water_normal.xpm
+
+# 	origin			dir			rad	height	color or texture
+# cy	2,0,1			-1,1,-1		1	2		255,255,255
+cy	2,0,1			-0.577350,0.577350,-0.577350		1	2		-T./xpm/checker.xpm
+co	1,1,-1			-0.577350,-0.577350,0.577350		1	3		255,0,0
+# co	-2.5,3.5,-1		1,-1,1		1	3   	255,255,255
+co	-4,-1,-1	0.577350,0.577350,0.577350		1	3   	-T./xpm/8k_earth_daymap.xpm
+co	0,0,0		0,0.894427,0.447214		1	3   	-T./xpm/8k_earth_daymap.xpm
+co	-3,2,2		0.577350,-0.577350,-0.577350		1	3   	-T./xpm/checker.xpm

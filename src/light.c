@@ -3,35 +3,31 @@
 /*                                                        :::      ::::::::   */
 /*   light.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bok <bok@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: seonghyu <seonghyu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/29 12:41:14 by seonghyu          #+#    #+#             */
-/*   Updated: 2023/04/07 21:25:24 by bok              ###   ########.fr       */
+/*   Updated: 2023/04/20 18:23:59 by seonghyu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 #include "ft_deque.h"
 
-// t_vec	get_incident_light(t_obj light, t_vec contact_vec)
-// {
-// 	light
-// }
-
-t_color	get_diffuse(t_data *data, t_vec *vector, t_obj *obj, int i)
+t_color	get_diffuse(t_data *data, t_vec *vector, t_color texture, int i)
 {
 	t_color	color;
 	t_vec	incident_vec;
 	int		kd;
 	float	constant;
 
+	color.color = 0;
 	kd = 1;
-	color = (t_color){0};
 	incident_vec = vec_norm(vec_sub(((t_obj *) \
 	(data->lights->content[i]))->origin, vector[1]));
-	constant = ((kd * (vec_dot(vector[0], incident_vec)) + 1) / 2);
+	constant = ((kd * (vec_dot(vector[0], incident_vec)) + 1) / 2) * ((t_obj *) \
+		(data->lights->content[i]))->ratio;
 	_add_color(&color, dot_color(mul_color(((t_obj *) \
-		(data->lights->content[i]))->color, constant), obj->color));
+		(data->lights->content[i]))->color, constant), texture));
 	return (color);
 }
 
@@ -47,7 +43,8 @@ t_color	get_specular(t_data *data, t_vec *vector, int i)
 	ref_vec = vec_norm(reflect_vec(vector[0], vec_sub(((t_obj *) \
 		(data->lights->content[i]))->origin, vector[1])));
 	view_vec = vec_norm(vec_sub(data->viewport.rays->origin, vector[1]));
-	constant = powf((ks * (vec_dot(ref_vec, view_vec) + 1) / 2), 5);
+	constant = powf((ks * (vec_dot(ref_vec, view_vec) + 1) / 2), 5) \
+		* ((t_obj *)(data->lights->content[i]))->ratio;
 	color = mul_color(((t_obj *)(data->lights->content[i]))->color, constant);
 	return (color);
 }
@@ -61,24 +58,21 @@ float	distance(t_obj *s, t_vec origin, t_vec dir)
 	ray.origin = origin;
 	ray.dir = dir;
 	dis = __FLT_MAX__;
-	if (s->property == E_PLANE)
-	{
+	if (s->property & E_PLANE)
 		d = get_det_plane(&ray, s);
-		// d = -1;
-	}
 	else if (s->property & E_SPHERE)
 		d = solution_sphere(&ray, s, get_det_sphere(&ray, s));
 	else if (s->property & E_CYLINDER)
-		d = solution_cylinder(&ray, s, get_det_cylinder(&ray, s), &dis);
+		d = solution_cylinder(&ray, s, get_det_cylinder(&ray, s));
 	else if (s->property & E_CONE)
-		d = solution_cone(&ray, s, get_det_cone(&ray, s), &dis);
+		d = solution_cone(&ray, s, get_det_cone(&ray, s));
 	else
 		return (-1);
 	dis = __FLT_MAX__;
 	if (d == -2 && s->property & E_CONE)
-		d = get_det_subplane(&ray, s, 1, &dis);
+		d = get_det_subplane(&ray, s, 1);
 	if (d == -2 && s->property & E_CYLINDER)
-		d = get_det_subplane(&ray, s, 0, &dis);
+		d = get_det_subplane(&ray, s, 0);
 	return (d);
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strjoin.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bok <bok@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: jbok <jbok@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 12:01:05 by seonghyu          #+#    #+#             */
-/*   Updated: 2023/03/30 16:15:31 by bok              ###   ########.fr       */
+/*   Updated: 2023/04/19 20:33:36 by jbok             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ static char	*ft_strcpy(char *dest, const char *src)
 char	*ft_strjoin(char const *s1, char const *s2)
 {
 	char	*re;
-	// int		i;
 	int		size;
 
 	size = ft_strlen(s1) + ft_strlen(s2);
@@ -37,7 +36,6 @@ char	*ft_strjoin(char const *s1, char const *s2)
 		re[0] = 0;
 		return (re);
 	}
-	// i = 0;
 	re = (char *)malloc(size + 1);
 	if (!re)
 		return (0);

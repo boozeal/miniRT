@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minirt.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bok <bok@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: jbok <jbok@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/12 17:28:04 by jbok              #+#    #+#             */
-/*   Updated: 2023/04/09 20:08:06 by bok              ###   ########.fr       */
+/*   Updated: 2023/04/20 18:46:25 by jbok             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,17 +18,14 @@
 # include <stdlib.h>
 # include <stdio.h>
 # include <math.h>
+# include <pthread.h>
 # include "mlx.h"
 # include "libft.h"
 # include "ft_vector.h"
+# include "ft_treemap.h"
 
-# ifndef SCREEN_WIDTH
-#  define SCREEN_WIDTH 1280UL
-# endif
-
-# ifndef SCREEN_HEIGHT
-#  define SCREEN_HEIGHT 720UL
-# endif
+# define SCREEN_WIDTH 1920UL
+# define SCREEN_HEIGHT 1080UL
 
 # ifndef EPSILON
 #  define EPSILON 0.0001
@@ -80,6 +77,13 @@ enum e_oper
 	E_DIV,
 };
 
+enum e_vector
+{
+	E_NOR = 0,
+	E_CON,
+	E_INC,
+};
+
 struct s_vec
 {
 	float	x;
@@ -109,9 +113,14 @@ struct s_object
 	{
 		t_color		color;
 		int			aa;
+		char		*texture_name;
+		t_texture	*texture;
 	};
-	t_texture		*texture;
-	t_normal		*normal;
+	union
+	{
+		char		*normal_name;
+		t_normal	*normal;
+	};
 	float			height;
 };
 
@@ -120,8 +129,6 @@ struct s_viewport
 	t_obj	*cam;
 	t_ray	*rays;
 	t_color	*pixels;
-	t_vec	horizonal;
-	t_vec	vertical;
 	ssize_t	w;
 	ssize_t	h;
 };
@@ -144,6 +151,8 @@ struct s_data
 	t_obj		*ambient;
 	t_vector	*objs;
 	t_vector	*lights;
+	t_treemap	texture;
+	t_treemap	normal;
 };
 
 struct s_image
@@ -171,7 +180,19 @@ struct s_normal
 	int		h;
 };
 
+typedef struct s_multi
+{
+	pthread_t		*threads;
+	t_data			*data;
+	t_vector		*task_stack;
+	pthread_mutex_t	task_stack_mutex;
+}	t_multi;
+
 // main.c
+t_color	rt_ray(t_data *data, t_ray *ray);
+
+//	refresh
+void	mlx_refresh(t_mlx *mlx, t_data *data);
 
 //	keyhook.c
 int		window_closed(int x, t_mlx *mlx);
@@ -181,6 +202,100 @@ int		key_press(int keycode, t_mlx *mlx);
 void	init_data(t_data *data, char *file);
 void	init_viewport(t_viewport *viewport);
 void	init_mlx(t_mlx *mlx, char *name);
+
+//	parse
+t_obj	*str_to_obj(char *str);
+void	set_objs(t_data *data, t_vector *vec);
+void	set_images(t_data *data);
+void	set_texture(t_data *data, t_obj *obj);
+void	set_normal(t_data *data, t_obj *obj);
+
+void	parse_ambient(t_obj *obj, char **strs);
+void	parse_cam(t_obj *obj, char **strs);
+void	parse_plane(t_obj *obj, char **strs);
+void	parse_obj1(t_obj *obj, char **strs);
+void	parse_obj2(t_obj *obj, char **strs);
+void	parse_extra(t_obj *obj, char **strs);
+
+int		get_property(char *str);
+t_vec	get_vec(char *str);
+t_color	get_color(char *str);
+
+//	multi.c
+void	rt_pixels_multi(t_data *data);
+
+//	rt.c
+t_color	rt_sphere(t_data *data, t_ray *ray, t_obj *s, float *dis);
+t_color	rt_plane(t_data *data, t_ray *ray, t_obj *s, float *dis);
+t_color	rt_cylinder(t_data *data, t_ray *ray, t_obj *s, float *dis);
+t_color	rt_cone(t_data *data, t_ray *ray, t_obj *s, float *dis);
+t_color	rt_ray(t_data *data, t_ray *ray);
+
+//	rt.utils.c
+t_color	rt_subplane_cy(t_data *data, t_ray *ray, t_obj *s, float *dis);
+t_color	rt_subplane_co(t_data *data, t_ray *ray, t_obj *s, float *dis);
+t_vec	reflect_vec(t_vec normal_vector, t_vec incident_vec);
+void	is_valid_cam(t_obj *cam);
+
+//	solutions.c
+float	solution_sphere(t_ray *ray, t_obj *s, float det);
+float	solution_cylinder(t_ray	*ray, t_obj *s, float det);
+float	solution_cone(t_ray	*ray, t_obj *s, float det);
+
+//	det.c
+float	get_det_sphere(t_ray *ray, t_obj *s);
+float	get_det_plane(t_ray *ray, t_obj *s);
+float	get_det_cylinder(t_ray *ray, t_obj *s);
+float	get_det_cone(t_ray *ray, t_obj *s);
+float	get_det_subplane(t_ray *ray, t_obj *s, int flag);
+
+//	trace.c
+t_color	set_ambient(t_data *data, t_vec *vector, t_obj *obj);
+t_color	cal_bright(t_data *data, t_vec *vector, t_obj *obj);
+t_color	get_texturecolor(t_vec *vector, t_obj *obj);
+t_color	get_phong(t_data *data, t_vec *vector, t_color texture);
+
+//	set_uv
+void	set_sphere_uv(float *uv, t_vec *vec, t_obj *obj);
+void	set_quadric_uv(float *uv, t_vec *vec, t_obj *obj);
+void	set_plane_uv(float *uv, t_vec *vec, t_obj *obj);
+
+//	ambient.c
+t_color	amb_diffuse(t_data *data, t_color texture);
+t_color	amb_specular(t_data *data, t_vec *vector);
+
+//	light.c
+t_vec	get_incident_light(t_obj light, t_vec contact_vec);
+t_color	get_diffuse(t_data *data, t_vec *vector, t_color color, int i);
+t_color	get_specular(t_data *data, t_vec *vector, int i);
+int		cal_shadow(t_data *data, t_vec contact_vec, int i);
+float	distance(t_obj *s, t_vec origin, t_vec dir);
+
+//	del.c
+void	del_unnecessary(t_data *data);
+void	del_viewport(t_viewport *viewport);
+void	del_texture(t_treemap_node *node);
+void	del_normal(t_treemap_node *node);
+void	del_multi(t_multi *multi);
+
+//	color
+t_color	add_color(t_color a, t_color b);
+t_color	*_add_color(t_color *a, t_color b);
+t_color	mul_color(t_color a, float b);
+t_color	*_mul_color(t_color *a, float b);
+t_color	*_sub_color(t_color *a, t_color b);
+t_color	dot_color(t_color a, t_color b);
+t_color	*_dot_color(t_color *a, t_color b);
+float	oper_color(unsigned char a, float b, int flag);
+
+//	minirt_utils
+float	ft_atof(char *s);
+int		checkf(float a);
+int		exit_msg(int n, char *str);
+int		check_valid_str(char *str);
+int		ft_strcmp(char *s1, char *s2);
+char	**ft_split2(char *str, char *charset);
+void	free_split(char **strs);
 
 //	vec
 t_vec	vec_add(t_vec a, t_vec b);
@@ -194,40 +309,7 @@ t_vec	vec_mul(t_vec vec, float f);
 t_vec	*_vec_mul(t_vec *vec, float f);
 t_vec	vec_norm(t_vec vec);
 t_vec	*_vec_norm(t_vec *vec);
-
-//	minirt_utils.c
-float	ft_atof(char *s);
-int		checkf(float a);
-int		exit_msg(int n, char *str);
-int		check_valid_str(char *str);
-
-//	trace.c
-float	solution_sphere(t_ray *ray, t_obj *s, float det);
-float	solution_cylinder(t_ray	*ray, t_obj *s, float det, float *dis);
-float	solution_cone(t_ray	*ray, t_obj *s, float det, float *dis);
-float	get_det_sphere(t_ray *ray, t_obj *s);
-float	get_det_plane(t_ray *ray, t_obj *s);
-float	get_det_cylinder(t_ray *ray, t_obj *s);
-float	get_det_cone(t_ray *ray, t_obj *s);
-t_color	set_ambient(t_data *data, t_vec *vector, t_obj *obj);
-t_color	cal_bright(t_data *data, t_vec nor_vec, t_vec con_vec, t_obj *obj);
-float	get_det_subplane(t_ray *ray, t_obj *s, int flag, float *dis);
-//	color.c
-t_color	add_color(t_color a, t_color b);
-t_color	*_add_color(t_color *a, t_color b);
-t_color	mul_color(t_color a, float b);
-t_color	*_mul_color(t_color *a, float b);
-t_color	*_sub_color(t_color *a, t_color b);
-t_color	dot_color(t_color a, t_color b);
-t_color	*_dot_color(t_color *a, t_color b);
-float	oper_color(unsigned char a, float b, int flag);
-//	light.c
-t_vec	get_incident_light(t_obj light, t_vec contact_vec);
-t_color	get_diffuse(t_data *data, t_vec *vector, t_obj *obj, int i);
-t_color	get_specular(t_data *data, t_vec *vector, int i);
-int		cal_shadow(t_data *data, t_vec contact_vec, int i);
-float	distance(t_obj *s, t_vec origin, t_vec dir);
-//	vec_oper.c
 t_vec	normalize_vec(t_vec vector);
-t_vec	reflect_vec(t_vec normal_vector, t_vec incident_vec);
+t_vec	vec_cross_safe(t_vec a, t_vec b);
+
 #endif

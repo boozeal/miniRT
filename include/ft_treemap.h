@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_treemap.h                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bok <bok@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: jbok <jbok@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/31 18:50:16 by jbok              #+#    #+#             */
-/*   Updated: 2023/02/04 23:08:34 by bok              ###   ########.fr       */
+/*   Updated: 2023/04/20 16:42:55 by jbok             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,10 @@ void			*treemap_get(t_treemap_node *node, void *key, \
 int (*key_cmp)(void *, void *));
 
 void			treemap_preorder(t_treemap_node *node, \
-void (*f)(void *, void *));
+void (*f)(t_treemap_node *node));
 void			treemap_inorder(t_treemap_node *node, \
-void (*f)(void *, void *));
+void (*f)(t_treemap_node *node));
 void			treemap_postorder(t_treemap_node *node, \
-void (*f)(void *, void *));
+void (*f)(t_treemap_node *node));
 
 #endif

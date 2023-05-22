@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bok <bok@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: jbok <jbok@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 19:16:17 by seonghyu          #+#    #+#             */
-/*   Updated: 2023/03/30 16:15:54 by bok              ###   ########.fr       */
+/*   Updated: 2023/04/19 20:33:14 by jbok             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ size_t	gnl_strlcpy(char *dest, char *src, size_t size)
 char	*gnl_strjoin(char *s1, char *s2)
 {
 	char	*re;
-	// int		i;
 	int		size;
 
 	if (s1 == NULL)
@@ -64,7 +63,6 @@ char	*gnl_strjoin(char *s1, char *s2)
 		re[0] = 0;
 		return (re);
 	}
-	// i = 0;
 	re = (char *)malloc(size + 1);
 	if (!re)
 		return (0);

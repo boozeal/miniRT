@@ -6,13 +6,13 @@
 /*   By: jbok <jbok@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/18 15:25:41 by bok               #+#    #+#             */
-/*   Updated: 2023/04/04 12:56:29 by jbok             ###   ########.fr       */
+/*   Updated: 2023/04/20 14:27:50 by jbok             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-t_vec	*_vec_add(t_vec *a, t_vec b)
+inline t_vec	*_vec_add(t_vec *a, t_vec b)
 {
 	a->x += b.x;
 	a->y += b.y;
@@ -20,7 +20,7 @@ t_vec	*_vec_add(t_vec *a, t_vec b)
 	return (a);
 }
 
-t_vec	*_vec_sub(t_vec *a, t_vec b)
+inline t_vec	*_vec_sub(t_vec *a, t_vec b)
 {
 	a->x -= b.x;
 	a->y -= b.y;
@@ -28,7 +28,7 @@ t_vec	*_vec_sub(t_vec *a, t_vec b)
 	return (a);
 }
 
-t_vec	*_vec_mul(t_vec *a, float f)
+inline t_vec	*_vec_mul(t_vec *a, float f)
 {
 	a->x *= f;
 	a->y *= f;
@@ -36,11 +36,16 @@ t_vec	*_vec_mul(t_vec *a, float f)
 	return (a);
 }
 
-t_vec	*_vec_norm(t_vec *vec)
+inline t_vec	*_vec_norm(t_vec *vec)
 {
 	const float	tmp = vec_len(*vec);
 
 	if (tmp == 0.0f)
-		exit_msg(1, "vec_norm");
+	{
+		vec->x = 0;
+		vec->y = 1;
+		vec->z = 0;
+		return (vec);
+	}
 	return (_vec_mul(vec, 1.0f / tmp));
 }

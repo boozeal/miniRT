@@ -3,21 +3,24 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: bok <bok@student.42.fr>                    +#+  +:+       +#+         #
+#    By: jbok <jbok@student.42seoul.kr>             +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/09/07 11:20:10 by jbok              #+#    #+#              #
-#    Updated: 2023/04/09 20:10:27 by bok              ###   ########.fr        #
+#    Updated: 2023/04/20 18:43:09 by jbok             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = miniRT
 
-HEADER = ./include/minirt.h ./include/ft_deque.h ./include/ft_vector.h ./include/ft_treemap.h
-SRC = main.c init.c trace.c light.c color.c parse.c parse_obj.c parse_get.c
-SRC += minirt_utils.c multi.c
+HEADER = minirt.h ft_deque.h ft_vector.h ft_treemap.h
+HEADER := ${addprefix ./include/, ${HEADER}}
+SRC = main.c init.c trace.c light.c color_basic.c color_self.c
+SRC += parse.c parse_obj.c parse_obj2.c parse_get.c
+SRC += minirt_utils.c multi.c solutions.c det.c ft_split2.c
 SRC += vec_basic.c vec_self.c vec_utils.c ft_deque.c ft_vector.c key_hook.c
 SRC += ft_treemap_insert.c ft_treemap_del.c ft_treemap_balance.c
 SRC += ft_treemap_traversal.c ft_treemap_utils.c
+SRC += rt.c rt_utils.c ambient.c set_uv.c refresh.c del.c
 OBJ = ${addprefix obj/, ${SRC:.c=.o}}
 INCLUDE = ./include ./mlx ./libft
 

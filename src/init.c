@@ -3,18 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bok <bok@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: jbok <jbok@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 10:57:02 by jbok              #+#    #+#             */
-/*   Updated: 2023/04/09 19:55:01 by bok              ###   ########.fr       */
+/*   Updated: 2023/04/20 17:56:17 by jbok             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <limits.h>
 #include "minirt.h"
-
-void	apply_objs(t_data *data, t_vector *vec);
-t_obj	*str_to_obj(char *str, void *mlx);
 
 void	init_data(t_data *data, char *file)
 {
@@ -28,40 +25,39 @@ void	init_data(t_data *data, char *file)
 	data->objs = ft_vecnew();
 	vec = ft_vecnew();
 	if (!data->lights || !data->objs || !vec)
-		exit_msg(1, "malloc failed :(");
+		exit_msg(1, "Not enough memory");
 	str = get_next_line(fd);
 	while (str)
 	{
 		if (str[0] == '#' || str[0] == '\n')
 			free(str);
 		else
-			ft_vec_push(vec, str_to_obj(str, data->mlx));
+			ft_vec_push(vec, str_to_obj(str));
 		str = get_next_line(fd);
 	}
-	apply_objs(data, vec);
+	set_objs(data, vec);
+	set_images(data);
 	if (!data->viewport.cam || !data->ambient || \
 	!data->lights->size || !data->objs->size)
-		exit_msg(1, "not enough objs :(");
+		exit_msg(1, "Not enough elements");
 }
 
 void	init_viewport(t_viewport *vp)
 {
+	const float	width = tanf(vp->cam->fov / 2 * M_PI / 180) * 2;
+	const float	height = width / SCREEN_WIDTH * SCREEN_HEIGHT;
+	t_vec		uv[2];
 	ssize_t		w;
 	ssize_t		h;
-	const float	width = tanf(vp->cam->fov * M_PI / 360) * 2;
-	const float	height = width / SCREEN_WIDTH * SCREEN_HEIGHT;
 
 	vp->w = SCREEN_WIDTH * vp->cam->aa;
 	vp->h = SCREEN_HEIGHT * vp->cam->aa;
-	if (vp->w / SCREEN_WIDTH != vp->cam->aa || vp->h / SCREEN_HEIGHT \
-	!= vp->cam->aa || SSIZE_MAX / vp->h < vp->w * (ssize_t) sizeof(t_ray))
-		exit_msg(1, "too large AA scale");
 	vp->rays = malloc(sizeof(t_ray) * vp->w * vp->h);
 	vp->pixels = malloc(sizeof(t_color) * vp->w * vp->h);
 	if (!vp->rays || !vp->pixels)
-		exit_msg(1, "malloc failed :(");
-	vp->horizonal = vec_norm(vec_cross(vp->cam->dir, (t_vec){0, 1, 0}));
-	vp->vertical = vec_norm(vec_cross(vp->horizonal, vp->cam->dir));
+		exit_msg(1, "Not enough memory");
+	uv[0] = vec_norm(vec_cross_safe(vp->cam->dir, (t_vec){0, 1, 0}));
+	uv[1] = vec_norm(vec_cross(uv[0], vp->cam->dir));
 	w = -1;
 	while (++w < vp->w)
 	{
@@ -69,9 +65,8 @@ void	init_viewport(t_viewport *vp)
 		while (++h < vp->h)
 			vp->rays[w + vp->w * h] = (t_ray){vp->cam->origin, vec_norm(\
 			vec_sub(vec_add(vec_add(vec_add(vp->cam->origin, vp->cam->dir), \
-			vec_mul(vp->horizonal, (width * (w - vp->w / 2) / vp->w))), \
-			vec_mul(vp->vertical, (height * (h - vp->h / 2) / vp->h))), \
-			vp->cam->origin))};
+			vec_mul(uv[0], (width * (w - vp->w / 2) / vp->w))), vec_mul(\
+			uv[1], (height * (h - vp->h / 2) / vp->h))), vp->cam->origin))};
 	}
 }
 
@@ -90,5 +85,5 @@ void	init_mlx(t_mlx *mlx, char *name)
 	mlx->addr = (t_color *)mlx_get_data_addr(mlx->image, \
 	&mlx->bit_per_pixel, &mlx->line_length, &mlx->endian);
 	if (!mlx->addr)
-		exit_msg(1, "mlx_get_data_addr :(");
+		exit_msg(1, "mlx_get_data_addr failed :(");
 }
