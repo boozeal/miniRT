@@ -24,8 +24,8 @@
 # include "ft_vector.h"
 # include "ft_treemap.h"
 
-# define SCREEN_WIDTH 1920UL
-# define SCREEN_HEIGHT 1080UL
+# define SCREEN_WIDTH 1512UL
+# define SCREEN_HEIGHT 940UL
 
 # ifndef EPSILON
 #  define EPSILON 0.0001

@@ -27,7 +27,6 @@ INCLUDE = ./include ./mlx ./libft
 LIBFT = libft/libft.a
 MLX = mlx/libmlx.a
 
-CFLAGS = -Wall -Wextra -Werror -O2
 CFLAGS += ${addprefix -I, ${INCLUDE}}
 LINKFLAGS = -Llibft -lft -Lmlx -lmlx -framework OpenGL -framework AppKit
 

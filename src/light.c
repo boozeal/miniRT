@@ -52,12 +52,10 @@ t_color	get_specular(t_data *data, t_vec *vector, int i)
 float	distance(t_obj *s, t_vec origin, t_vec dir)
 {
 	t_ray	ray;
-	float	dis;
 	float	d;
 
 	ray.origin = origin;
 	ray.dir = dir;
-	dis = __FLT_MAX__;
 	if (s->property & E_PLANE)
 		d = get_det_plane(&ray, s);
 	else if (s->property & E_SPHERE)
@@ -68,7 +66,6 @@ float	distance(t_obj *s, t_vec origin, t_vec dir)
 		d = solution_cone(&ray, s, get_det_cone(&ray, s));
 	else
 		return (-1);
-	dis = __FLT_MAX__;
 	if (d == -2 && s->property & E_CONE)
 		d = get_det_subplane(&ray, s, 1);
 	if (d == -2 && s->property & E_CYLINDER)
